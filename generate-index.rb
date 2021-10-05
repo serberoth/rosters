@@ -1,10 +1,21 @@
 
 # OUTPUT_FILENAME = 'index-test.html'
 OUTPUT_FILENAME = 'index.html'
-INPUT_DIRECTORY = './40k'
+INPUT_DIRECTORY = './games'
 
 def titlize(str)
     str.split(/ |\_/).map(&:capitalize).join(' ')
+end
+
+def find_games(dir)
+    games = {}
+    Dir.foreach(dir) do |filename|
+        next if '.' == filename || '..' == filename
+        next unless File.directory?("#{dir}/#{filename}")
+        games[filename] = "#{dir}/#{filename}"
+        puts "#{filename}"
+    end
+    return games
 end
 
 def find_armies(dir)
@@ -43,7 +54,7 @@ def get_lists(army, dir)
         '<ul>'
     ]
     lists.sort.each {|list| items << "\t<li><a href=\"#{dir}/#{list}\" >#{list}</a></li>" }
-    items << 'No lists...' if lists.empty?
+    items << "\t<li>No lists...</li>" if lists.empty?
     items << '</ul>'
     items << ''
     return items
@@ -56,14 +67,21 @@ File.open(OUTPUT_FILENAME, 'wt') do |file|
         <title>Rosters</title>
     </head>
     <body>
+        <h1>Wargame Army Lists</h1>
 
 ))
     
-    armies = find_armies(INPUT_DIRECTORY)
+    games = find_games(INPUT_DIRECTORY)
+    games.keys.sort.each do |game|
+        dir = games[game]
 
-    file.puts(get_armies(armies))
-    armies.each do |entry|
-        file.puts(get_lists(*entry))
+        file.puts("<h2>#{titlize(game)}</h2>")
+        armies = find_armies(dir)
+
+        file.puts(get_armies(armies))
+        armies.each do |entry|
+            file.puts(get_lists(*entry))
+        end
     end
 
     file.puts(%q(    </body>
