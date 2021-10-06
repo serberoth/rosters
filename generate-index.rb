@@ -53,7 +53,7 @@ def get_lists(army, dir)
         "<h3 id=\"#{army}\" >#{titlize(army)}</h3>",
         '<ul>'
     ]
-    lists.sort.each {|list| items << "\t<li><a href=\"#{dir}/#{list}\" >#{list}</a></li>" }
+    lists.sort.each {|list| items << "\t<li><a href=\"#{dir}/#{list}\" >#{list.gsub(/\.html$/, '')}</a></li>" }
     items << "\t<li>No lists...</li>" if lists.empty?
     items << '</ul>'
     items << ''
